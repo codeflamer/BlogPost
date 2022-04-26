@@ -3,8 +3,9 @@ import Head from 'next/head'
 // import Image from 'next/image'
 // import styles from '../styles/Home.module.css'
 import { GetStaticProps } from 'next'
-import { Post } from '../types';
+import IPost from '../types';
 import { useState } from 'react';
+import PostLists from '../components/PostLists';
 
 
 const API_URL:string = 'https://jsonplaceholder.typicode.com/posts';
@@ -13,7 +14,7 @@ const API_URL:string = 'https://jsonplaceholder.typicode.com/posts';
 
 const Home: NextPage = ({posts}:InferGetStaticPropsType<typeof getStaticProps>) => {
 
-  const [postList,setPostList] = useState<Post[]>(posts)
+  const [postList,setPostList] = useState<IPost[]>(posts);
 
   return (
     <div>
@@ -24,13 +25,9 @@ const Home: NextPage = ({posts}:InferGetStaticPropsType<typeof getStaticProps>) 
       </Head>
 
       <main>
-        {postList.map((post)=>(
-          <div key={post.id} className='mb-2'>
-            <h3 className='font-medium text-center underline mb-4 uppercase'>{post.title}</h3>
-            <p className='text-center'>{post.body}</p>
-            <hr/>
-          </div>
-        ))}
+        
+        <PostLists posts={postList}/>
+
       </main>
       
     </div>
@@ -41,14 +38,13 @@ export default Home
 
 export const getStaticProps: GetStaticProps = async (context) => {
     const res = await fetch(API_URL);
-    const posts:Post[] = await res.json();
-
-
-    console.log(posts);
+    const posts:IPost[] = await res.json();
 
     return{
       props: {
         posts,
       },
+      // revalidate: 10,
+      notFound:true
     }
 }
